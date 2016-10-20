@@ -1,5 +1,3 @@
-
-jbue424 [6:15 PM]  
 class ChessBoard:
    def __init__(self):
        #initialize as the first board
