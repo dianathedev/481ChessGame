@@ -4,6 +4,8 @@ from Square import Square
 from Piece import Piece
 from Strategy import Strategy
 
+print "Testing change"
+
 class Board(object):
 
     blackIsInCheckmate = False
