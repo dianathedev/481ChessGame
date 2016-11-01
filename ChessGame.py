@@ -1,4 +1,6 @@
 import chess
+from Strategy import Strategy
+from fenparser import FenParser
 
 class Tree():
 	def __init__(self, move, children):
@@ -19,11 +21,7 @@ def play(n):
 		if board.isCheckMate() or board.isStalemate(): #if checkmate or stalemate are true then break from the loop
 			#update Log file
 			break
-		#moves = generateMoves(board) #Generate tree of possible moves
-		if turn == 'X':
-			mov = heuristicX(board)
-		elif turn == 'Y':
-			mov = heuristicY(board)
+		mov = generateMoves(board, turn)
 		move(turn, mov, board)
 
 
@@ -53,7 +51,8 @@ def showMove(turn, player, piece, coords, board):
 # Input: 
 # Output: Best move
 # Uses X heuristic and mini-max to determine the best move.
-def heuristicX(board):
+def generateMoves(board, turn):
+
 	tree = ()
 	moves = board.legal_moves
 	for move in moves:  #save every move as a Tree node
@@ -66,7 +65,10 @@ def heuristicX(board):
 		for y in item.children: #for evey child of move
 			board.push_uci(y)
 			state = board.fen()
-			value = #TODO use state to determine heuristicX value
+			if turn is 'X':
+				value = heuristicX(state)
+			elif turn is 'Y':
+				value = heuristicY(state)
 			if value < point:
 				point = value
 			board.pop()
@@ -83,32 +85,11 @@ def heuristicX(board):
 # Input: 
 # Output: Best move
 # Uses Y heuristic and mini-max to determine the best move.
-def heuristicY(board):
-	tree = ()
-	moves = board.legal_moves
-	for move in moves:  #save every move as a Tree node
-		tree.append(Tree(str(move)))
-	for item in tree:  #for every move
-		point = float("inf")
-		board.push_uci(item.move)
-		for i in board.legal_moves:
-			item.children.append(str(i))
-		for y in item.children: #for evey child of move
-			board.push_uci(y)
-			state = board.fen()
-			value = #TODO use state to determine heuristicY value
-			if value < point:
-				point = value
-			board.pop()
-		board.pop()
-		item.points = point
-	maxPoints = float("-inf")
-	bestMove = None
-	for x in tree
-		if x.points > maxPoints:
-			maxPoints = x.points
-			bestMove = x.move
-	return bestMove
+def heuristicX(state):
+	
+
+def heuristicY(state):
+
 
 # Input: Yourself(X or Y)
 # Output: None?

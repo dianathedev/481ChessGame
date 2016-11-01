@@ -1,9 +1,9 @@
 class Strategy(object):
 
-    ATTACK_KING_BONUS = 5000
-    ATTACK_ROOK_BONUS = 1000
+    #ATTACK_KING_BONUS = 5000
+    #ATTACK_ROOK_BONUS = 1000
 
-    king = [
+    self.king = [
         [-50,-40,-30,-20,-20,-30,-40,-50,],
         [-30,-20,-10,  0,  0,-10,-20,-30,],
         [-30,-10, 20, 30, 30, 20,-10,-30,],
@@ -14,7 +14,7 @@ class Strategy(object):
         [-50,-30,-30,-30,-30,-30,-30,-50]
     ]
 
-    rook = [
+    self.rook = [
         [0,  0,  0,  0,  0,  0,  0,  0,],
         [5, 10, 10, 10, 10, 10, 10,  5,],
         [-5,  0,  0,  0,  0,  0,  0, -5,],
@@ -25,7 +25,7 @@ class Strategy(object):
         [0,  0,  0,  5,  5,  0,  0,  0]
     ]
     
-    Night = [
+    self.night = [
         [2,  3,  4,  4,  4,  4,  3, 2,],
         [3,  4,  6,  6,  6,  6,  4, 3,],
         [4,  6,  8,  8,  8,  8,  6, 4,],
@@ -36,6 +36,17 @@ class Strategy(object):
         [2,  3,  4,  4,  4,  4,  3, 2 ]
     ]
 
+    def getKing(self):
+        return self.king
+
+    def getRook(self):
+        return self.rook
+
+    def getNight(self):
+        return self.night
+
+
+    """
     @staticmethod
     def squareToValue(square, color):
         piece = square.getPiece()
@@ -52,3 +63,4 @@ class Strategy(object):
             return Strategy.rook[row][column]
         elif piece.getType() == 'King':
             return Strategy.king[row][column]
+        """
