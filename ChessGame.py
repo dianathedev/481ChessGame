@@ -3,9 +3,10 @@
 # Drives the game forward.
 def play(n):
 	turn = input("Which player are you?(X/Y)")
-	
-	#Loop until N turns or checkmate/stalemate is reached
-		setupBoard(turn)
+	setupBoard()
+	for i in range(n):
+		if (turn == 'X' and n > 0) or turn == 'Y':
+			showOpponentMove(turn)
 		#Check for Checkmate/Stalemate here?
 		moves = #Generate tree of possible moves
 		if turn == 'X':
