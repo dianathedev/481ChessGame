@@ -1,36 +1,47 @@
+import chess
+
+class Tree():
+	def __init__(self, move, children):
+		self.move = move
+		self.points = None
+		self.children = None
+
 # Input: Maximum number of turns
 # Output: Checkmate or Stalemate
 # Drives the game forward.
 def play(n):
 	turn = input("Which player are you?(X/Y)")
-	setupBoard()
+	board = setupBoard()
 	for i in range(n):
-		if (turn == 'X' and n > 0) or turn == 'Y':
+		if (turn == 'X' and n > 0) or turn == 'Y': # X doesnt showopponentmove on his first turn
 			showOpponentMove(turn)
-		#Check for Checkmate/Stalemate here?
-		moves = #Generate tree of possible moves
+
+		if board.isCheckMate() or board.isStalemate(): #if checkmate or stalemate are true then break from the loop
+			#update Log file
+			break
+		#moves = generateMoves(board) #Generate tree of possible moves
 		if turn == 'X':
-			mov = heuristicX(moves)
+			mov = heuristicX(board)
 		elif turn == 'Y':
-			mov = heuristicY(moves)
+			mov = heuristicY(board)
 		move(mov)
 
 
 # Input: Yourself(X or Y), Next Move
 # Output: None?
 # Calls showMove and updates board state.
-def move(turn, mov):
+def move(turn, mov, board):
 	player = turn
 	piece = #Find piece based on mov
 	coords = #Find coords based on mov
-	showMove(turn, player, piece, coords)
+	showMove(turn, player, piece, coords, board)
 
 
 # Input: Yourself(X or Y), Player whose move you are showing, Piece moved, New coordinate of piece.
 # Output: None?
 # Updates gameboard and log
-def showMove(turn, player, piece, coords):
-	write_to_screen(player, piece, coords)
+def showMove(turn, player, piece, coords, board):
+	board
 
 	if turn == 'X':
 		#update log X
@@ -38,15 +49,63 @@ def showMove(turn, player, piece, coords):
 		#update log Y
 
 
-# Input: Tree of possible moves, depth of 3?
+# Input: 
 # Output: Best move
 # Uses X heuristic and mini-max to determine the best move.
-def heuristicX(moves):
+def heuristicX(board):
+	tree = ()
+	moves = board.legal_moves
+	for move in moves:  #save every move as a Tree node
+		tree.append(Tree(move))
+	for item in tree:  #for every move
+		point = float("inf")
+		board.push_san(item.move)
+		item.children = board.legal_moves
+		for y in item.children: #for evey child of move
+			board.push_san(y)
+			state = board.fen()
+			value = #TODO use state to determine heuristic value
+			if value < point:
+				point = value
+			board.pop()
+		board.pop()
+		item.points = point
+	maxPoints = float("-inf")
+	bestMove = None
+	for x in tree
+		if x.points > maxPoints:
+			maxPoints = x.points
+			bestMove = x.move
+	return bestMove
 
-# Input: Tree of possible moves, depth of 3?
+# Input: 
 # Output: Best move
 # Uses Y heuristic and mini-max to determine the best move.
-def heuristicY(moves):
+def heuristicY(board):
+	tree = ()
+	moves = board.legal_moves
+	for move in moves:  #save every move as a Tree node
+		tree.append(Tree(move))
+	for item in tree:  #for every move
+		point = float("inf")
+		board.push_san(item.move)
+		item.children = board.legal_moves
+		for y in item.children: #for evey child of move
+			board.push_san(y)
+			state = board.fen()
+			value = #TODO use state to determine heuristic value
+			if value < point:
+				point = value
+			board.pop()
+		board.pop()
+		item.points = point
+	maxPoints = float("-inf")
+	bestMove = None
+	for x in tree
+		if x.points > maxPoints:
+			maxPoints = x.points
+			bestMove = x.move
+	return bestMove
 
 # Input: Yourself(X or Y)
 # Output: None?
@@ -69,4 +128,15 @@ def write_to_screen(player, piece, coords):
 # Output: None
 # Setup Board with initial chess positions.
 def setupBoard():
-	#Use API to set board with initial positions.
+	return chess.Board(fen='2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1', chess960=False)
+
+"""
+# Input: Current board state
+# Output: Tree off all moves depth 3
+# Generate all possible moves thinking ahead 2 steps
+def generateMoves(board):
+	moves = Tree()
+	moves.children = board.legal_moves
+	moves.parent = None
+	for x in moves.children:
+"""
