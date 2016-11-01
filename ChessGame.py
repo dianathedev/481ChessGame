@@ -24,13 +24,14 @@ def play(n):
 			mov = heuristicX(board)
 		elif turn == 'Y':
 			mov = heuristicY(board)
-		move(mov)
+		move(turn, mov, board)
 
 
 # Input: Yourself(X or Y), Next Move
 # Output: None?
 # Calls showMove and updates board state.
 def move(turn, mov, board):
+	board.push_uci(mov)
 	player = turn
 	piece = #Find piece based on mov
 	coords = #Find coords based on mov
@@ -56,15 +57,16 @@ def heuristicX(board):
 	tree = ()
 	moves = board.legal_moves
 	for move in moves:  #save every move as a Tree node
-		tree.append(Tree(move))
+		tree.append(Tree(str(move)))
 	for item in tree:  #for every move
 		point = float("inf")
-		board.push_san(item.move)
-		item.children = board.legal_moves
+		board.push_uci(item.move)
+		for i in board.legal_moves:
+			item.children.append(str(i))
 		for y in item.children: #for evey child of move
-			board.push_san(y)
+			board.push_uci(y)
 			state = board.fen()
-			value = #TODO use state to determine heuristic value
+			value = #TODO use state to determine heuristicX value
 			if value < point:
 				point = value
 			board.pop()
@@ -85,15 +87,16 @@ def heuristicY(board):
 	tree = ()
 	moves = board.legal_moves
 	for move in moves:  #save every move as a Tree node
-		tree.append(Tree(move))
+		tree.append(Tree(str(move)))
 	for item in tree:  #for every move
 		point = float("inf")
-		board.push_san(item.move)
-		item.children = board.legal_moves
+		board.push_uci(item.move)
+		for i in board.legal_moves:
+			item.children.append(str(i))
 		for y in item.children: #for evey child of move
-			board.push_san(y)
+			board.push_uci(y)
 			state = board.fen()
-			value = #TODO use state to determine heuristic value
+			value = #TODO use state to determine heuristicY value
 			if value < point:
 				point = value
 			board.pop()
@@ -122,7 +125,8 @@ def read_from_log(turn):
 # Input: Player who made move, Piece moved, New coordinates of piece
 # Output: None
 # Update the on screen board with new move.
-def write_to_screen(player, piece, coords):
+def write_to_screen(board):
+	board
 
 # Input: None
 # Output: None
