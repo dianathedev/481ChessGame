@@ -1,4 +1,6 @@
 import chess
+from Strategy import Strategy
+from fenparser import FenParser
 
 class Tree():
 	def __init__(self, move, children):
@@ -19,11 +21,7 @@ def play(n):
 		if board.isCheckMate() or board.isStalemate(): #if checkmate or stalemate are true then break from the loop
 			#update Log file
 			break
-		#moves = generateMoves(board) #Generate tree of possible moves
-		if turn == 'X':
-			mov = heuristicX(board)
-		elif turn == 'Y':
-			mov = heuristicY(board)
+		mov = generateMoves(board, turn)
 		move(turn, mov, board)
 
 
@@ -53,7 +51,8 @@ def showMove(turn, player, piece, coords, board):
 # Input: 
 # Output: Best move
 # Uses X heuristic and mini-max to determine the best move.
-def heuristicX(board):
+def generateMoves(board, turn):
+
 	tree = ()
 	moves = board.legal_moves
 	for move in moves:  #save every move as a Tree node
@@ -66,13 +65,16 @@ def heuristicX(board):
 		for y in item.children: #for evey child of move
 			board.push_uci(y)
 			state = board.fen()
-			value = #TODO use state to determine heuristicX value
+			if turn is 'X':
+				value = heuristicX(state)
+			elif turn is 'Y':
+				value = heuristicY(state)
 			if value < point:
 				point = value
 			board.pop()
 		board.pop()
 		item.points = point
-	maxPoints = float("-inf")
+	maxPoints = -float("inf")
 	bestMove = None
 	for x in tree
 		if x.points > maxPoints:
@@ -83,32 +85,72 @@ def heuristicX(board):
 # Input: 
 # Output: Best move
 # Uses Y heuristic and mini-max to determine the best move.
-def heuristicY(board):
-	tree = ()
-	moves = board.legal_moves
-	for move in moves:  #save every move as a Tree node
-		tree.append(Tree(str(move)))
-	for item in tree:  #for every move
-		point = float("inf")
-		board.push_uci(item.move)
-		for i in board.legal_moves:
-			item.children.append(str(i))
-		for y in item.children: #for evey child of move
-			board.push_uci(y)
-			state = board.fen()
-			value = #TODO use state to determine heuristicY value
-			if value < point:
-				point = value
-			board.pop()
-		board.pop()
-		item.points = point
-	maxPoints = float("-inf")
-	bestMove = None
-	for x in tree
-		if x.points > maxPoints:
-			maxPoints = x.points
-			bestMove = x.move
-	return bestMove
+def heuristicX(state):
+	strat= Strategy()
+	value = 0
+	newBoard = FenParser(state)
+	board = newBoard.parse()
+
+	#find King Value
+	try:
+		row, col = find(board, 'K')
+	except:
+		return -float("inf")
+	value += strat.getKing()[row][col]
+
+	#find rook value
+	try:
+		row col = find(board, 'R')
+		value += strat.getRook()[row][col]
+	except:
+		value -= 20
+
+	#find night value
+
+	try:
+		row, col = find(board, 'N')
+		value += strat.getNight()[row][col]
+	except:
+		value -= 5
+
+	#find enemy night
+	try:
+		row, col = find(board, 'n')
+	except:
+		value += 20
+
+def heuristicY(state):
+	strat= Strategy()
+	value = 0
+	newBoard = FenParser(state)
+	board = newBoard.parse()
+
+	#find king value
+	try:
+		row, col = find(board, 'k')
+		value += strat.getKing()[row][col]
+	except:
+		-float("inf")
+
+	#find night value
+	try:
+		row, col = find(board, 'n')
+		value += strat.getNight()[row][col]
+	except:
+		value -= 5
+
+	#find enemy rook
+	try:
+		row, col = find(board, 'R')
+	except:
+		value += 50
+
+	#find enemy night
+	try:
+		row, col = find(board, 'N')
+	except:
+		value += 15
+
 
 # Input: Yourself(X or Y)
 # Output: None?
@@ -133,6 +175,15 @@ def write_to_screen(board):
 # Setup Board with initial chess positions.
 def setupBoard():
 	return chess.Board(fen='2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1', chess960=False)
+
+def find(l,elem):
+	for row, i in enumerate(l):
+		try:
+			column = i.index(elem)
+		except ValueError:
+			continue
+		return  row, column
+	return -1
 
 """
 # Input: Current board state
