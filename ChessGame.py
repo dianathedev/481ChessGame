@@ -118,6 +118,7 @@ def heuristicX(state):
 		row, col = find(board, 'n')
 	except:
 		value += 20
+	return value
 
 def heuristicY(state):
 	strat= Strategy()
@@ -150,6 +151,7 @@ def heuristicY(state):
 		row, col = find(board, 'N')
 	except:
 		value += 15
+	return value
 
 
 # Input: Yourself(X or Y)
