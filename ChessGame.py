@@ -2,34 +2,34 @@
 # Output: Checkmate or Stalemate
 # Drives the game forward.
 def play(n):
-	turn = input("Which player are you?(X/Y)");
+	turn = input("Which player are you?(X/Y)")
 	
 	#Loop until N turns or checkmate/stalemate is reached
-		setupBoard(turn);
+		setupBoard(turn)
 		#Check for Checkmate/Stalemate here?
 		moves = #Generate tree of possible moves
 		if turn == 'X':
-			mov = heuristicX(moves);
+			mov = heuristicX(moves)
 		elif turn == 'Y':
-			mov = heuristicY(moves);
-		move(mov);
+			mov = heuristicY(moves)
+		move(mov)
 
 
 # Input: Yourself(X or Y), Next Move
 # Output: None?
 # Calls showMove and updates board state.
 def move(turn, mov):
-	player = turn;
+	player = turn
 	piece = #Find piece based on mov
 	coords = #Find coords based on mov
-	showMove(turn, player, piece, coords);
+	showMove(turn, player, piece, coords)
 
 
 # Input: Yourself(X or Y), Player whose move you are showing, Piece moved, New coordinate of piece.
 # Output: None?
 # Updates gameboard and log
 def showMove(turn, player, piece, coords):
-	write_to_screen(player, piece, coords);
+	write_to_screen(player, piece, coords)
 
 	if turn == 'X':
 		#update log X
@@ -50,9 +50,9 @@ def heuristicY(moves):
 # Input: Yourself(X or Y)
 # Output: None?
 # Updates board and log with opponents last move.
-def setupBoard(turn):
-	player, piece, coords = read_from_log(turn);
-	showMove(turn, player, piece, coords);
+def showOpponentMove(turn):
+	player, piece, coords = read_from_log(turn)
+	showMove(turn, player, piece, coords)
 
 # Input: Yourself(X or Y)
 # Output: Player who last made a move, Piece moved, New coordinates of piece
@@ -63,3 +63,9 @@ def read_from_log(turn):
 # Output: None
 # Update the on screen board with new move.
 def write_to_screen(player, piece, coords):
+
+# Input: None
+# Output: None
+# Setup Board with initial chess positions.
+def setupBoard():
+	#Use API to set board with initial positions.
