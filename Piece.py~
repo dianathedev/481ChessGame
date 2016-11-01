@@ -17,7 +17,7 @@ class Piece(object):
 
     directionMap = {
         'Rook'  : ['straight'],
-        'King'  : ['straight', 'diagonal'],
+        'King'  : ['straight', 'diagonal']
         'Night' : ['gamma']
         #
     }

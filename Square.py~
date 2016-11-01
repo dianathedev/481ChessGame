@@ -54,7 +54,7 @@ class Square(object):
 
         if self.Piece.type == 'Rook':
             # Straight Moves
-            for i in range(self.row, self.MAX_ROW_BOUND+1):
+            for i in range(self.column, self.MAX_ROW_BOUND+1):
                 print (i)
                 if i is not self.row:
                     #TODO: Check if the move is going to collide with anything)

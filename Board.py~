@@ -157,7 +157,7 @@ class Board(object):
 
         otherPlayersMoves = []
         for sq in otherPlayersSquares:
-            otherPlayersMoves += sq.generateMoves(self.squares)
+            otherPlayersMoves += sq.generateMoves()
 
         myKing = self.getPieceSquare(color, 'King')
 
@@ -185,7 +185,7 @@ class Board(object):
 
         currentState = self.saveState()
 
-        otherKingsMoves = otherKingSquare.generateMoves(self.squares)
+        otherKingsMoves = otherKingSquare.generateMoves()
 
         stillInCheck = True
 
@@ -272,9 +272,9 @@ class Board(object):
 
                 # Number of moves analysis
                 if piece.isColor('white'):
-                    whiteMoves += square.generateMoves(self.squares)
+                    whiteMoves += square.generateMoves()
                 else:
-                    blackMoves += square.generateMoves(self.squares)
+                    blackMoves += square.generateMoves()
 
         # Capture Analysis
         for piece in self.capturedPieces:

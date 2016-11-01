@@ -71,6 +71,9 @@ def play(n, DEBUG):
     if DEBUG:
         board = Board()
         board.setup()
+
+        startBoard = [
+        
         
         startBoard = [
         ('E1', Piece(color='white', type='King')),        
