@@ -18,24 +18,32 @@ class Tree():
 # Output: Checkmate or Stalemate
 # Drives the game forward.
 def play(n):
-    turn = input("Which player are you?(X/Y)")
+    global interface
+    turn = raw_input("Which player are you?(X/Y)")
     board = setupBoard()
+    print(board)
 
     for i in range(n):
         if (turn == 'X' and n > 1) or turn == 'Y': # X doesnt showopponentmove on his first turn
 
             showOpponentMove(turn, board)
 
-        if board.isCheckMate() or board.isStalemate(): #if checkmate or stalemate are true then break from the loop
+        if board.is_checkmate() or board.is_stalemate(): #if checkmate or stalemate are true then break from the loop
             #TODO: 
             #write_result_to_log(turn)
             #update Log file
             print("Made it!")
             break
-        
-        #mov = generateMoves(board, turn)
+        #moves = generateMoves(board) #Generate tree of possible moves
+        if turn == 'X':
+            #mov = heuristicX(board)
+            pass
+        elif turn == 'Y':
+            #mov = heuristicY(board)
+            pass
+        mov = raw_input("\nEnter move e.g. e4e5\n")
+        print(mov)
 
-        mov = input("Enter move e.g. E4->F5")
         move(turn, mov, board)
 
 
@@ -69,11 +77,11 @@ def showMove(turn, player, piece, coords, board):
     global interface
     if turn == 'X':
         #update log X
-        interface.write_to_log_X(self, player, piece, coords)
+        interface.write_to_log_X(player, piece, coords)
 
     elif turn == 'Y':
         #update log Y
-        interface.write_to_log_X(self, player, piece, coords)
+        interface.write_to_log_X(player, piece, coords)
 
 
 
@@ -81,7 +89,7 @@ def showMove(turn, player, piece, coords, board):
 # Input: 
 # Output: Best move
 # Uses X heuristic and mini-max to determine the best move.
-def generateMoves(board):
+def heuristicX(board):
     tree = ()
     moves = board.legal_moves
     for move in moves:  #save every move as a Tree node
@@ -94,16 +102,13 @@ def generateMoves(board):
         for y in item.children: #for evey child of move
             board.push_uci(y)
             state = board.fen()
-            if turn is 'X':
-                value = heuristicX(state)
-            elif turn is 'Y':
-                value = heuristicY(state)
+            value = 0#TODO use state to determine heuristicX value
             if value < point:
                 point = value
             board.pop()
         board.pop()
         item.points = point
-    maxPoints = -float("inf")
+    maxPoints = float("-inf")
     bestMove = None
     for x in tree:
         if x.points > maxPoints:
@@ -111,84 +116,46 @@ def generateMoves(board):
             bestMove = x.move
     return bestMove
 
-# Input: A single board state
+# Input: 
 # Output: Best move
 # Uses Y heuristic and mini-max to determine the best move.
-def heuristicX(state):
-
-    strat= Strategy()
-    value = 0
-    newBoard = FenParser(state)
-    board = newBoard.parse()
-
-    #find King Value
-    try:
-        row, col = find(board, 'K')
-    except:
-        return -float("inf")
-    value += strat.getKing()[row][col]
-
-    #find rook value
-    try:
-        row col = find(board, 'R')
-        value += strat.getRook()[row][col]
-    except:
-        value -= 20
-
-    #find night value
-
-    try:
-        row, col = find(board, 'N')
-        value += strat.getNight()[row][col]
-    except:
-        value -= 5
-
-    #find enemy night
-    try:
-        row, col = find(board, 'n')
-    except:
-        value += 20
-    return value
-
-def heuristicY(state):
-    strat= Strategy()
-    value = 0
-    newBoard = FenParser(state)
-    board = newBoard.parse()
-
-    #find king value
-    try:
-        row, col = find(board, 'k')
-        value += strat.getKing()[row][col]
-    except:
-        -float("inf")
-
-    #find night value
-    try:
-        row, col = find(board, 'n')
-        value += strat.getNight()[row][col]
-    except:
-        value -= 5
-
-    #find enemy rook
-    try:
-        row, col = find(board, 'R')
-    except:
-        value += 50
-
-    #find enemy night
-    try:
-        row, col = find(board, 'N')
-    except:
-        value += 15
-    return value
-
+def heuristicY(board):
+    tree = ()
+    moves = board.legal_moves
+    for move in moves:  #save every move as a Tree node
+        tree.append(Tree(str(move)))
+    for item in tree:  #for every move
+        point = float("inf")
+        board.push_uci(item.move)
+        for i in board.legal_moves:
+            item.children.append(str(i))
+        for y in item.children: #for evey child of move
+            board.push_uci(y)
+            state = board.fen()
+            value = 0#TODO use state to determine heuristicY value
+            if value < point:
+                point = value
+            board.pop()
+        board.pop()
+        item.points = point
+    maxPoints = float("-inf")
+    bestMove = None
+    for x in tree:
+        if x.points > maxPoints:
+            maxPoints = x.points
+            bestMove = x.move
+    return bestMove
 
 # Input: Yourself(X or Y)
 # Output: None?
 # Updates board and log with opponents last move.
 def showOpponentMove(turn, board):
-    player, piece, coords = user_reading_opponent_log(turn)
+    global interface
+    try:    
+        player, piece, coords = interface.user_reading_opponent_log(turn)
+    except:
+        print("Log was empty")
+        return
 
     newboard = FenParser(board.fen())
     boardlist = newboard.parse()
@@ -237,15 +204,16 @@ def read_from_log(turn):
 # Output: None
 # Update the on screen board with new move.
 def write_to_screen(board):
-    board
+    pass
 
 # Input: None
 # Output: None
 # Setup Board with initial chess positions.
 def setupBoard():
-    board = chess.Board(fen='2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1', chess960=False)
-    print(board)
-    return chess.Board(fen='2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1', chess960=False)
+    #board = chess.Board('2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1')
+    #print(board)
+    #return board    
+    return chess.Board('2n1k3/8/8/8/8/8/8/4K1NR w K - 0 1')
 
 
 def main():
@@ -257,15 +225,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-def find(l,elem):
-	for row, i in enumerate(l):
-		try:
-			column = i.index(elem)
-		except ValueError:
-			continue
-		return  row, column
-	return -1
 
 """
 # Input: Current board state
