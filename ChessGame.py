@@ -74,7 +74,7 @@ def generateMoves(board, turn):
 			board.pop()
 		board.pop()
 		item.points = point
-	maxPoints = float("-inf")
+	maxPoints = -float("inf")
 	bestMove = None
 	for x in tree
 		if x.points > maxPoints:
@@ -86,9 +86,70 @@ def generateMoves(board, turn):
 # Output: Best move
 # Uses Y heuristic and mini-max to determine the best move.
 def heuristicX(state):
-	
+	strat= Strategy()
+	value = 0
+	newBoard = FenParser(state)
+	board = newBoard.parse()
+
+	#find King Value
+	try:
+		row, col = find(board, 'K')
+	except:
+		return -float("inf")
+	value += strat.getKing()[row][col]
+
+	#find rook value
+	try:
+		row col = find(board, 'R')
+		value += strat.getRook()[row][col]
+	except:
+		value -= 20
+
+	#find night value
+
+	try:
+		row, col = find(board, 'N')
+		value += strat.getNight()[row][col]
+	except:
+		value -= 5
+
+	#find enemy night
+	try:
+		row, col = find(board, 'n')
+	except:
+		value += 20
 
 def heuristicY(state):
+	strat= Strategy()
+	value = 0
+	newBoard = FenParser(state)
+	board = newBoard.parse()
+
+	#find king value
+	try:
+		row, col = find(board, 'k')
+		value += strat.getKing()[row][col]
+	except:
+		-float("inf")
+
+	#find night value
+	try:
+		row, col = find(board, 'n')
+		value += strat.getNight()[row][col]
+	except:
+		value -= 5
+
+	#find enemy rook
+	try:
+		row, col = find(board, 'R')
+	except:
+		value += 50
+
+	#find enemy night
+	try:
+		row, col = find(board, 'N')
+	except:
+		value += 15
 
 
 # Input: Yourself(X or Y)
@@ -114,6 +175,15 @@ def write_to_screen(board):
 # Setup Board with initial chess positions.
 def setupBoard():
 	return chess.Board(fen='2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1', chess960=False)
+
+def find(l,elem):
+	for row, i in enumerate(l):
+		try:
+			column = i.index(elem)
+		except ValueError:
+			continue
+		return  row, column
+	return -1
 
 """
 # Input: Current board state
