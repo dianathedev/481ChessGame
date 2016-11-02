@@ -4,9 +4,10 @@ from fenparser import FenParser
 from log import LogInterface
 
 interface = LogInterface()
-turn = "X"
+#interface.clear_logs()
 last_move_X = ""
 last_move_Y = ""
+expected_line_number = 2
 
 class Tree():
     def __init__(self, move, children):
@@ -18,36 +19,67 @@ class Tree():
 # Output: Checkmate or Stalemate
 # Drives the game forward.
 def play(n):
-    turn = input("Which player are you?(X/Y)")
+    global interface
+    turn = raw_input("Which player are you? (X/Y): ")
     board = setupBoard()
+    print(board)
+
+    #a = board.Piece.from_symbol('K')
+    #b = board.Piece.from_symbol('k')
+
+    #print("a: {}\nb: {}\n".format(a,b))
 
     for i in range(n):
-        if (turn == 'X' and n > 1) or turn == 'Y': # X doesnt showopponentmove on his first turn
-
+        if (turn == 'X' and i >= 1) or turn == 'Y': # X doesnt showopponentmove on his first turn
+        #if turn == 'X':
+            print("CONDITIONS MET\n")
             showOpponentMove(turn, board)
 
-        if board.isCheckMate() or board.isStalemate(): #if checkmate or stalemate are true then break from the loop
+        if board.is_checkmate() or board.is_stalemate(): #if checkmate or stalemate are true then break from the loop
             #TODO: 
             #write_result_to_log(turn)
             #update Log file
             print("Made it!")
             break
-        
-        #mov = generateMoves(board, turn)
+        #moves = generateMoves(board) #Generate tree of possible moves
+        if turn == 'X':
+            #mov = heuristicX(board)
+            pass
+        elif turn == 'Y':
+            #mov = heuristicY(board)
+            pass
 
-        mov = input("Enter move e.g. E4->F5")
+        #try:
+        mov = raw_input("\nEnter valid move in format like h1h3: \n")
+        print(mov)
+        if mov == 'q':
+            quit(-1)
+        print("TRYING move():\n\n")
         move(turn, mov, board)
+        #except:
+            #pass
 
 
 # Input: Yourself(X or Y), Next Move
 # Output: None?
 # Calls showMove and updates board state.
 def move(turn, mov, board):
+    print("ENTERED move():\n\n")
+    print("Turn: {}\nMove: {}\n".format(turn, mov))
     newboard = FenParser(board.fen())
     boardlist = newboard.parse()
+    """
+    print("BOARDLIST:\n{}".format(boardlist))
+    
+    for i in range(8):
+        for j in range(8):
+            print(boardlist[i][j] + " ")
+        print("\n")
+    """
 
-    r = int(mov[1]) - 1
-    c = ord(mov[0]) - 98
+    r = 7 - ( int(mov[1]) - 1)
+    c = ord(mov[0]) - 97
+    print("move() r: {}\nc: {}\n".format(r,c))
 
     pieceAtLocation = boardlist[r][c]
     pieceAtLocation.upper()
@@ -57,26 +89,33 @@ def move(turn, mov, board):
     board.push_uci(mov)
     player = turn
     piece = pieceAtLocation #Find piece based on mov
+    if piece == ' ':
+        print("PIECE IS EMPTY\n")
     coords = coordsFixed #Find coords based on mov
 
+    print("Turn: {}\nPlayer: {}\nPiece: {}\nCoords: {}".format(turn, player, piece, coords))
+    print("TRYING showMove():\n\n")
     showMove(turn, player, piece, coords, board)
 
 # Input: Yourself(X or Y), Player whose move you are showing, Piece moved, New coordinate of piece.
 # Output: None?
 # Updates gameboard and log
 def showMove(turn, player, piece, coords, board):
-    print(board)   
+    print("ENTERED showMove():\n\n")
     global interface
+
+    # Show the updated move
+    print(board)   
+    
     if turn == 'X':
         #update log X
-        interface.write_to_log_X(self, player, piece, coords)
+        interface.write_to_log_X(player, piece, coords)
 
     elif turn == 'Y':
         #update log Y
-        interface.write_to_log_X(self, player, piece, coords)
+        interface.write_to_log_Y(player, piece, coords)
 
-
-
+    print("FINISHED showMove():\n\n")
 
 # Input: 
 # Output: Best move
@@ -188,31 +227,82 @@ def heuristicY(state):
 # Output: None?
 # Updates board and log with opponents last move.
 def showOpponentMove(turn, board):
-    player, piece, coords = user_reading_opponent_log(turn)
+    print("ENTERED showOpponentMove():\n")
+
+    print(turn)
+    global interface
+    global expected_line_number
+
+    notFound = True
+    while notFound:
+        try:
+            line_number, player, piece, coords = interface.user_reading_opponent_log(turn)
+            #print(line_number, " ", expected_line_number)
+            #print("Made it here")
+            if int(line_number) == expected_line_number:
+                print("Working as intended")
+                expected_line_number += 2
+                notFound = False
+                coords = coords.lower()
+
+                if player == "Y":
+                    interface.write_to_log_X(player, piece, coords)
+                elif player == "X":
+                    interface.write_to_log_Y(player, piece, coords)
+            else:
+                #print("Try again")
+                pass
+        except:
+            print("Log was empty")
+            return
 
     newboard = FenParser(board.fen())
     boardlist = newboard.parse()
-
     # Change the capital letter to lowercase.
-    coords.lower()
+    #coords = coords.lower()
 
     # The piece is uppercase for X, lowercase for Y.
     if player == "Y":
-        piece = str.lower(piece)
+        piece = piece.lower()
 
     # Get original coords of move.
     item = piece
-    r, c = find(boardlist, item)
-    
-    r = r-1
-    c = ord(c)-65
+    r, c = findTEST(boardlist, item)
+
+    print("row: {}".format(r))
+
+    c = chr(c+97)
+    r = abs(r-7) + 1
 
     # Combine
-    finalMove = c+r+coords
+    finalMove = c+str(r)+coords
 
-    move(player, finalMove, board)
+    print("finalmove: {}".format(finalMove))
 
+    board.push_uci(finalMove)
+    print(board)
+    #move(player, finalMove, board)
 
+# Takes in a boardlist (fen format) and a piece to search for
+def findTEST(l, elem):
+    #for row, i in enumerate(l):
+    for row, columnlist in enumerate(l):
+        col = 0
+        for piece in columnlist:
+            if piece == elem:
+                return row, col
+            col += 1
+                #print "Found it!"
+                #return row,col
+    return -1
+    """
+        try:
+            column = i.index(elem)
+        except ValueError:
+            continue
+        return row, column
+    return -1
+    """
 
 # Takes in a boardlist (fen format) and a piece to search for
 def find(l, elem):
@@ -237,15 +327,16 @@ def read_from_log(turn):
 # Output: None
 # Update the on screen board with new move.
 def write_to_screen(board):
-    board
+    pass
 
 # Input: None
 # Output: None
 # Setup Board with initial chess positions.
 def setupBoard():
-    board = chess.Board(fen='2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1', chess960=False)
-    print(board)
-    return chess.Board(fen='2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1', chess960=False)
+    #board = chess.Board('2n1k3/8/8/8/8/8/8/4K1NR 2 KQkq - 0 1')
+    #print(board)
+    #return board    
+    return chess.Board('2n1k3/8/8/8/8/8/8/4K1NR w K - 0 1')
 
 
 def main():
@@ -257,15 +348,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-def find(l,elem):
-	for row, i in enumerate(l):
-		try:
-			column = i.index(elem)
-		except ValueError:
-			continue
-		return  row, column
-	return -1
 
 """
 # Input: Current board state
