@@ -22,12 +22,7 @@ def play(n):
     global interface
     turn = raw_input("Which player are you? (X/Y): ")
     board = setupBoard()
-    print(board)
 
-    #a = board.Piece.from_symbol('K')
-    #b = board.Piece.from_symbol('k')
-
-    #print("a: {}\nb: {}\n".format(a,b))
 
     for i in range(n):
         if (turn == 'X' and i >= 1) or turn == 'Y': # X doesnt showopponentmove on his first turn
@@ -41,24 +36,13 @@ def play(n):
             #update Log file
             print("Made it!")
             break
-        #moves = generateMoves(board) #Generate tree of possible moves
-        if turn == 'X':
-            #mov = heuristicX(board)
-            pass
-        elif turn == 'Y':
-            #mov = heuristicY(board)
-            pass
+        moves = generateMoves(board, turn) #Generate tree of possible moves
 
         #try:
-        mov = raw_input("\nEnter valid move in format like h1h3: \n")
-        print(mov)
-        if mov == 'q':
-            quit(-1)
         print("TRYING move():\n\n")
         move(turn, mov, board)
         #except:
             #pass
-
 
 # Input: Yourself(X or Y), Next Move
 # Output: None?
