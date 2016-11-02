@@ -2,54 +2,65 @@ import chess
 import time
 from fenparser import FenParser
 from log import LogInterface
+from Strategy import Strategy
 
 interface = LogInterface()
 #interface.clear_logs()
 last_move_X = ""
 last_move_Y = ""
-expected_line_number = 2
+user = raw_input("Which player are you? (X/Y): \n")
+
+if user == 'X': 
+    expected_line_number = 2
+elif user == 'Y':
+    expected_line_number = 1
 
 class Tree():
-    def __init__(self, move, children):
+    def __init__(self, move):
         self.move = move
-        self.points = None
-        self.children = None
+        self.points = 0
+        self.children = []
 
 # Input: Maximum number of turns
 # Output: Checkmate or Stalemate
 # Drives the game forward.
 def play(n):
     global interface
-    turn = raw_input("Which player are you? (X/Y): ")
+    global user
+   
     board = setupBoard()
 
-
+    turn = user
     for i in range(n):
         if (turn == 'X' and i >= 1) or turn == 'Y': # X doesnt showopponentmove on his first turn
         #if turn == 'X':
-            print("CONDITIONS MET\n")
+            #print("CONDITIONS MET\n")
+            #print("ENTERING show(): ")
             showOpponentMove(turn, board)
+            #cont = raw_input("Cont")
 
-        if board.is_checkmate() or board.is_stalemate(): #if checkmate or stalemate are true then break from the loop
-            #TODO: 
-            #write_result_to_log(turn)
-            #update Log file
-            print("Made it!")
-            break
-        moves = generateMoves(board, turn) #Generate tree of possible moves
+        if board.is_checkmate():
+            interface.write_result_to_log(turn,"lose","checkmate")
+            quit(-1)
+        if board.is_stalemate(): #if checkmate or stalemate are true then break from the loop
+            interface.write_result_to_log(turn,"tie","stalemate")
+            quit(-1)
+
+        mov = generateMoves(board, turn) #Generate tree of possible moves
 
         #try:
-        print("TRYING move():\n\n")
+        #print("TRYING move():\n\n")
         move(turn, mov, board)
-        #except:
-            #pass
+
+    # Reached max # of moves
+    interface.write_result_to_log(turn,"tie","reached max # of moves")
 
 # Input: Yourself(X or Y), Next Move
 # Output: None?
 # Calls showMove and updates board state.
 def move(turn, mov, board):
-    print("ENTERED move():\n\n")
-    print("Turn: {}\nMove: {}\n".format(turn, mov))
+    #print("ENTERED move():\n\n")
+    #print("Turn: {}\nMove: {}\n".format(turn, mov))
     newboard = FenParser(board.fen())
     boardlist = newboard.parse()
     """
@@ -63,7 +74,7 @@ def move(turn, mov, board):
 
     r = 7 - ( int(mov[1]) - 1)
     c = ord(mov[0]) - 97
-    print("move() r: {}\nc: {}\n".format(r,c))
+    #print("move() r: {}\nc: {}\n".format(r,c))
 
     pieceAtLocation = boardlist[r][c]
     pieceAtLocation.upper()
@@ -73,19 +84,19 @@ def move(turn, mov, board):
     board.push_uci(mov)
     player = turn
     piece = pieceAtLocation #Find piece based on mov
-    if piece == ' ':
-        print("PIECE IS EMPTY\n")
+    #if piece == ' ':
+        #print("PIECE IS EMPTY\n")
     coords = coordsFixed #Find coords based on mov
 
-    print("Turn: {}\nPlayer: {}\nPiece: {}\nCoords: {}".format(turn, player, piece, coords))
-    print("TRYING showMove():\n\n")
+    #print("Turn: {}\nPlayer: {}\nPiece: {}\nCoords: {}".format(turn, player, piece, coords))
+    #print("TRYING showMove():\n\n")
     showMove(turn, player, piece, coords, board)
 
 # Input: Yourself(X or Y), Player whose move you are showing, Piece moved, New coordinate of piece.
 # Output: None?
 # Updates gameboard and log
 def showMove(turn, player, piece, coords, board):
-    print("ENTERED showMove():\n\n")
+    #print("ENTERED showMove():\n\n")
     global interface
 
     # Show the updated move
@@ -99,13 +110,13 @@ def showMove(turn, player, piece, coords, board):
         #update log Y
         interface.write_to_log_Y(player, piece, coords)
 
-    print("FINISHED showMove():\n\n")
+    #print("FINISHED showMove():\n\n")
 
 # Input: 
 # Output: Best move
 # Uses X heuristic and mini-max to determine the best move.
-def generateMoves(board):
-    tree = ()
+def generateMoves(board, turn):
+    tree = []
     moves = board.legal_moves
     for move in moves:  #save every move as a Tree node
         tree.append(Tree(str(move)))
@@ -153,7 +164,7 @@ def heuristicX(state):
 
     #find rook value
     try:
-        row col = find(board, 'R')
+        row, col = find(board, 'R')
         value += strat.getRook()[row][col]
     except:
         value -= 20
@@ -211,9 +222,9 @@ def heuristicY(state):
 # Output: None?
 # Updates board and log with opponents last move.
 def showOpponentMove(turn, board):
-    print("ENTERED showOpponentMove():\n")
 
-    print(turn)
+    #print("ENTERED showOpponentMove():\n")
+    #print(turn)
     global interface
     global expected_line_number
 
@@ -221,10 +232,11 @@ def showOpponentMove(turn, board):
     while notFound:
         try:
             line_number, player, piece, coords = interface.user_reading_opponent_log(turn)
+            
             #print(line_number, " ", expected_line_number)
             #print("Made it here")
             if int(line_number) == expected_line_number:
-                print("Working as intended")
+                #print("Working as intended")
                 expected_line_number += 2
                 notFound = False
                 coords = coords.lower()
@@ -237,8 +249,8 @@ def showOpponentMove(turn, board):
                 #print("Try again")
                 pass
         except:
-            print("Log was empty")
-            return
+            #print("Log was empty")
+            pass
 
     newboard = FenParser(board.fen())
     boardlist = newboard.parse()
@@ -253,7 +265,7 @@ def showOpponentMove(turn, board):
     item = piece
     r, c = findTEST(boardlist, item)
 
-    print("row: {}".format(r))
+    #print("row: {}".format(r))
 
     c = chr(c+97)
     r = abs(r-7) + 1
@@ -261,7 +273,7 @@ def showOpponentMove(turn, board):
     # Combine
     finalMove = c+str(r)+coords
 
-    print("finalmove: {}".format(finalMove))
+    #print("finalmove: {}".format(finalMove))
 
     board.push_uci(finalMove)
     print(board)
@@ -332,14 +344,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-# Input: Current board state
-# Output: Tree off all moves depth 3
-# Generate all possible moves thinking ahead 2 steps
-def generateMoves(board):
-	moves = Tree()
-	moves.children = board.legal_moves
-	moves.parent = None
-	for x in moves.children:
-"""
