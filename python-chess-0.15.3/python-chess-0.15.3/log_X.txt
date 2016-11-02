@@ -1,0 +1,7 @@
+1 X:R:h6
+2 Y:K:e7
+3 X:K:e2
+4 Y:N:d6
+5 X:K:e3
+6 Y:N:c4
+Lose, checkmate
