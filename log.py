@@ -76,8 +76,9 @@ class LogInterface:
     #   @param piece    - The piece being moved.
     #   @param coords   - The new coordinates to write.
     def write_to_log_X(self, player, piece, coords):
-        new_line = str(self.line_X) + " " + player + ":" + piece + ":" + coords + "\n"
+        new_line = str(self.line_X) + " " + player + ":" + piece + ":" + coords.lower() + "\n"
         self.line_X += 1
+        print(self.line_X)
 
         with open(self.log_X, "a") as f:
             f.write(new_line)
@@ -89,7 +90,7 @@ class LogInterface:
     #   @param piece    - The piece being moved.
     #   @param coords   - The new coordinates to write.
     def write_to_log_Y(self, player, piece, coords):
-        new_line = str(self.line_Y) + " " + player + ":" + piece + ":" + coords + "\n"
+        new_line = str(self.line_Y) + " " + player + ":" + piece + ":" + coords.lower() + "\n"
         self.line_Y += 1
 
         with open(self.log_Y, "a") as f:
@@ -114,15 +115,16 @@ class LogInterface:
             with open(self.log_Y, "r") as f:
                 for line in f:
                     file_lines.append(line)
-            
+        #print(file_lines)
+
         # Split the final line into its parts: player, piece, coords
         RE_line = pattern.split(file_lines[-1])
         # Remove the newline
         if RE_line[-1] is "\n":
             del RE_line[1]
-       
+
         # Return 3 variables: player, piece, coords (end location)
-        return RE_line[1],RE_line[2],RE_line[3]
+        return RE_line[0], RE_line[1],RE_line[2],RE_line[3]
 
 
     ''' For writing the final result'''
@@ -144,10 +146,3 @@ class LogInterface:
             # Open the log file for Y for appending.
             with open(self.log_Y,"a+") as f:
                 f.write(last_line)
-
-
-
-
-
-
-
