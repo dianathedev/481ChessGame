@@ -78,7 +78,7 @@ class LogInterface:
     def write_to_log_X(self, player, piece, coords):
         new_line = str(self.line_X) + " " + player + ":" + piece + ":" + coords.lower() + "\n"
         self.line_X += 1
-        print(self.line_X)
+        #print(self.line_X)
 
         with open(self.log_X, "a") as f:
             f.write(new_line)
