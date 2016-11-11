@@ -90,16 +90,18 @@ def play(n):
     # This loop will handle playing the game. Continue until the game ends or
     # the maximum number of moves has been reached.
     for i in range(n):
-        startTime = datetime.datetime.now() # Get the current time.
         # X makes the first move. For all other moves, check the opponent's move.
         if (turn == 'X' and i >= 1) or turn == 'Y':
             showOpponentMove(turn, board)
 
+        startTime = datetime.datetime.now() # Get the current time.
         # The opponent has made a move, we need to check if the game is over.
         checkBoardStatus(turn, board)
         
         # Use the Minimax algorithm with Alpha-Beta pruning to find the move.
         bestscore, mov = alphaBetaMax(turn, board, alpha, beta, ply)
+        if mov == None:
+            checkBoardStatus(turn, board)
 
         # Call move to complete the best move found by the algorithm.
         move(turn, mov, board)
@@ -299,10 +301,10 @@ def alphaBetaMax(turn, boardstate, alpha, beta, levelsToGo):
         currentTime = datetime.datetime.now()
         timeDifference = (currentTime - startTime)
         timeDifference = timeDifference.total_seconds()
-        print(timeDifference)
-        #if timeDifference > 8.5:
-            #print("Time taken: {}".format(timeDifference))
-            #break
+        # Ensure the move is under 10 seconds                
+        if timeDifference > 8.5:
+            print("Reached time limit!")
+            break
 
     return (alpha, bestMove)
 
@@ -348,10 +350,10 @@ def alphaBetaMin(turn, boardstate, alpha, beta, levelsToGo):
         currentTime = datetime.datetime.now()
         timeDifference = (currentTime - startTime)
         timeDifference = timeDifference.total_seconds()
-        print(timeDifference)
-        #if timeDifference > 8.5:
-            #print("Time taken: {}".format(timeDifference))
-            #break
+        # Ensure the move is under 10 seconds                
+        if timeDifference > 8.5:
+            print("Reached time limit!")
+            break
 
     return (beta, bestMove)
 
