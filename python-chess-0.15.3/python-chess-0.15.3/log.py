@@ -1,12 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Author: Eric Roe
-# Comments still need to be added, but here is a brief introduction.
-
+# Class: CS 481 - Artificial Intelligence
+# Instructor: Ryu
+# Date: Fall 2016
+'''
 # Description:
-#   This currently handles reading and writing to the log text file. It doesn't have any checking to make sure the
-#   file successfully opens. Reading from a file with improper format (outlined below) will not break anything,
-#   but it will not split the content up correctly.
-
+#   This file handles reading and writing to the log text files. Reading from a file
+#   with improper format (outlined below) will not break anything, but it will not 
+#   split the content up correctly.
+'''
 # Future additions:
 #   None
 
@@ -36,7 +38,7 @@
 6 NEXT MOVE
 """
 
-# HOW IT WORKS:
+# How it works:
 #   Player X writes to log_X.txt and reads from log_Y.txt
 #   Player Y writes to log_Y.txt and reads from log_X.txt
 
@@ -61,8 +63,9 @@ class LogInterface:
             pass
 
 
-    '''Clear the log values'''
+    ''' Clear the log values '''
     # Empties the logs.
+    # Called only by X upon program launch.
     def clear_logs(self):
         with open(self.log_X,"w") as f:
             f.write("")
@@ -70,26 +73,27 @@ class LogInterface:
             f.write("")
 
 
-    ''' For writing to the log'''
+    ''' For writing to the log (X). '''
     #   @param player   - The current player, X or Y. This is needed to tell us which
     #                     file we should be writing to, log_X.txt or log_Y.txt.
     #   @param piece    - The piece being moved.
     #   @param coords   - The new coordinates to write.
     def write_to_log_X(self, player, piece, coords):
+        # Combine the parts of a move in the proper format
         new_line = str(self.line_X) + " " + player + ":" + piece + ":" + coords.lower() + "\n"
         self.line_X += 1
-        #print(self.line_X)
 
         with open(self.log_X, "a") as f:
             f.write(new_line)
 
 
-    ''' For writing to the log'''
+    ''' For writing to the log (Y). '''
     #   @param player   - The current player, X or Y. This is needed to tell us which
     #                     file we should be writing to, log_X.txt or log_Y.txt.
     #   @param piece    - The piece being moved.
     #   @param coords   - The new coordinates to write.
     def write_to_log_Y(self, player, piece, coords):
+        # Combine the parts of a move in the proper format
         new_line = str(self.line_Y) + " " + player + ":" + piece + ":" + coords.lower() + "\n"
         self.line_Y += 1
 
@@ -97,7 +101,7 @@ class LogInterface:
             f.write(new_line)
 
 
-    ''' For reading from the logs'''
+    ''' For reading from the logs. '''
     #   @param player   - The current player, X or Y. This is needed to tell us which
     #                     file we should be writing to, log_X.txt or log_Y.txt.
     def user_reading_opponent_log(self, player):
@@ -115,7 +119,6 @@ class LogInterface:
             with open(self.log_Y, "r") as f:
                 for line in f:
                     file_lines.append(line)
-        #print(file_lines)
 
         # Split the final line into its parts: player, piece, coords
         RE_line = pattern.split(file_lines[-1])
@@ -127,7 +130,7 @@ class LogInterface:
         return RE_line[0], RE_line[1],RE_line[2],RE_line[3]
 
 
-    ''' For writing the final result'''
+    ''' For writing the final result. '''
     #   @param player   - The current player, X or Y. This is needed to tell us which
     #                     file we should be writing to, log_X.txt or log_Y.txt.
     #   @param result   - The result for this player. Will be one of: 
