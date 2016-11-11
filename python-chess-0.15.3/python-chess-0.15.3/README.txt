@@ -14,6 +14,6 @@ Contact Information:
 Justin Buerano     justinbuerano@gmail.com
 Deshawn Dana       Dashwen@gmail.com
 Diana Galvan       Dianag118@csu.fullerton.edu
-Alberto Gomez	   otrebla117@csu.fullerton.edu
-Clara Kim	       klayrah_kim@csu.fullerton.edu
-Eric Roe	       ericroe@csu.fullerton.edu
+Alberto Gomez	     otrebla117@csu.fullerton.edu
+Clara Kim	     klayrah_kim@csu.fullerton.edu
+Eric Roe	     ericroe@csu.fullerton.edu
