@@ -299,9 +299,10 @@ def alphaBetaMax(turn, boardstate, alpha, beta, levelsToGo):
         currentTime = datetime.datetime.now()
         timeDifference = (currentTime - startTime)
         timeDifference = timeDifference.total_seconds()
-        if timeDifference > 8.5:
-            print("Time taken: {}".format(timeDifference))
-            break
+        print(timeDifference)
+        #if timeDifference > 8.5:
+            #print("Time taken: {}".format(timeDifference))
+            #break
 
     return (alpha, bestMove)
 
@@ -347,9 +348,10 @@ def alphaBetaMin(turn, boardstate, alpha, beta, levelsToGo):
         currentTime = datetime.datetime.now()
         timeDifference = (currentTime - startTime)
         timeDifference = timeDifference.total_seconds()
-        if timeDifference > 8.5:
-            print("Time taken: {}".format(timeDifference))
-            break
+        print(timeDifference)
+        #if timeDifference > 8.5:
+            #print("Time taken: {}".format(timeDifference))
+            #break
 
     return (beta, bestMove)
 
